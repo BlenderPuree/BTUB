@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>MLB Game Scoreboard</title>
+    <link rel="icon" href="icon.png" type="image/png" />
+    <link rel="stylesheet" href="style-1.css" />
+    <script src="../assets/analytics.js"></script>
+</head>
+  <body>
+    <div id="scoreboardContainer">
+      <!-- Game Header, Inning State, Bases, Count -->
+      <div id="topScoreboard" class="top-scoreboard"></div>
+
+      <!-- Inning-by-inning linescore -->
+      <div id="linescoreTable" class="linescore-table"></div>
+
+      <!-- Content Slider -->
+      <div id="contentSlider" class="content-slider">
+        <button id="statsBtn" class="slider-btn active" onclick="showStats()">Boxscore</button>
+        <button id="teamStatsBtn" class="slider-btn" onclick="showTeamStats()">Stats</button>
+        <button id="playsBtn" class="slider-btn" onclick="showPlays()">Plays</button>
+      </div>
+
+      <!-- Stream Embed -->
+      <div id="streamEmbed"></div>
+
+      <!-- Player Stats Content -->
+      <div id="statsContent" class="content-section active">
+        <!-- Player stats -->
+        <div id="playerStats" class="player-stats"></div>
+      </div>
+
+      <!-- Team Stats Content -->
+      <div id="teamStatsContent" class="content-section2">
+        <!-- Team Stats will be rendered here -->
+        <div id="teamStatsDisplay"></div>
+      </div>
+
+      <!-- Plays Content -->
+      <div id="playsContent" class="content-section1">
+        <div class="plays-placeholder">
+          <!-- Plays content will be rendered here -->
+        </div>
+      </div>
+    </div>
+
+    <script src="scoreboard.js"></script>
+  </body>
+</html>

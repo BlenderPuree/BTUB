@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>UEFA Standings</title>
+    <link rel="icon" href="soccer-ball-png-24.png" type="image/png" />
+    <link rel="stylesheet" href="../style-2.css" />
+    <script src="../../assets/analytics.js"></script>
+</head>
+  <body>
+    <div id="navbar-container"></div>
+
+    <div id="leagueButtons" class="league-buttons"></div>
+
+    <div id="standings">
+      <h2>Standings</h2>
+      <div id="standingsContainer" class="division-standings"></div>
+    </div>
+
+    <script src="navbarLoader.js"></script>
+    <script src="navbar.js"></script>
+    <script src="standings.js"></script>
+    <div id="footer-container"></div>
+    <script>
+      fetch("footer.html")
+        .then(response => response.text())
+        .then(html => {
+          document.getElementById("footer-container").innerHTML = html;
+        });
+    </script>
+  </body>
+</html>

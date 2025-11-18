@@ -1,0 +1,21 @@
+{
+  "name": "the-unblocked-blender",
+  "version": "1.0.0",
+  "description": "A retro-themed games and streaming website featuring functional games and movies/TV shows.",
+  "main": "index.js",
+  "scripts": {
+    "start": "live-server public --entry-file=index.html",
+    "build": "echo 'Build process not defined yet.'"
+  },
+  "keywords": [
+    "games",
+    "streaming",
+    "retro",
+    "unblocked"
+  ],
+  "author": "Your Name",
+  "license": "MIT",
+  "dependencies": {
+    "live-server": "^1.2.1"
+  }
+}
