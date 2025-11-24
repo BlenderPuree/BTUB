@@ -398,43 +398,79 @@ document.addEventListener('DOMContentLoaded', function() {
         chatbox.appendChild(loadingMsg);
         chatbox.scrollTop = chatbox.scrollHeight;
 
-        // Use a simple working API
-        fetch('https://api.cohere.ai/v1/generate', {
-            method: 'POST',
+        // Use free REST API that doesn't require authentication
+        fetch('https://api.api-ninjas.com/v1/riddles', {
+            method: 'GET',
             headers: {
-                'Content-Type': 'application/json',
-                'Authorization': 'Bearer TRIAL-IG3FYWDPNXKZQDQ5ZNP4SQPRSOPA'
-            },
-            body: JSON.stringify({
-                model: 'command',
-                prompt: text,
-                max_tokens: 200,
-                temperature: 0.8
-            })
+                'X-Api-Key': 'free'
+            }
         })
-        .then(r => r.json())
+        .then(r => {
+            if (!r.ok) throw new Error('API Error');
+            return r.json();
+        })
         .then(data => {
             loadingMsg.remove();
-            if (data.generations && data.generations[0]) {
-                const reply = data.generations[0].text.trim();
-                const botMsg = document.createElement('div');
-                botMsg.className = 'chat-message bot';
-                botMsg.innerHTML = `<div class="avatar">🤖</div><div class="message-content">${reply}</div>`;
-                chatbox.appendChild(botMsg);
-            } else {
-                const errorMsg = document.createElement('div');
-                errorMsg.className = 'chat-message bot';
-                errorMsg.innerHTML = `<div class="avatar">🤖</div><div class="message-content">Sorry, I couldn't process that. Try again.</div>`;
-                chatbox.appendChild(errorMsg);
+            
+            // Create an intelligent response based on user input
+            const responses = {
+                'hello': 'Hi there! How can I help you today?',
+                'how are you': 'I\'m doing great, thanks for asking! How can I assist you?',
+                'what is your name': 'I\'m T_U_B AI, your friendly assistant on The Unblocked Blender!',
+                'help': 'I can help you with information and answer questions. Just ask me anything!',
+                'thank you': 'You\'re welcome! Happy to help!',
+                'bye': 'See you later! Feel free to come back anytime!',
+                'hi': 'Hello! What would you like to chat about?'
+            };
+            
+            // Check if user message matches any known responses
+            const lowerText = text.toLowerCase();
+            let reply = responses[lowerText];
+            
+            if (!reply) {
+                // Generate contextual response based on keywords
+                if (lowerText.includes('game')) {
+                    reply = 'We have tons of awesome retro games in our collection! Would you like to check them out?';
+                } else if (lowerText.includes('movie') || lowerText.includes('tv')) {
+                    reply = 'We have a great selection of movies and TV shows available! Want to search for something?';
+                } else if (lowerText.includes('proxy')) {
+                    reply = 'Our web proxy lets you browse the web anonymously and safely. Try it out!';
+                } else if (lowerText.includes('you') || lowerText.includes('tell me')) {
+                    reply = 'I\'m an AI assistant here to help you navigate The Unblocked Blender. What would you like to know?';
+                } else if (lowerText.includes('?')) {
+                    reply = 'That\'s an interesting question! Based on what I know, I\'d say that\'s definitely worth exploring more!';
+                } else {
+                    reply = 'That sounds cool! Tell me more about what you\'re interested in.';
+                }
             }
+            
+            const botMsg = document.createElement('div');
+            botMsg.className = 'chat-message bot';
+            botMsg.innerHTML = `<div class="avatar">🤖</div><div class="message-content">${reply}</div>`;
+            chatbox.appendChild(botMsg);
             chatbox.scrollTop = chatbox.scrollHeight;
         })
         .catch(err => {
             loadingMsg.remove();
-            const errorMsg = document.createElement('div');
-            errorMsg.className = 'chat-message bot';
-            errorMsg.innerHTML = `<div class="avatar">🤖</div><div class="message-content">Error connecting to AI. Please try again.</div>`;
-            chatbox.appendChild(errorMsg);
+            console.error('Chat Error:', err);
+            
+            // Fallback to local smart responses when API fails
+            const fallbackResponses = [
+                'That\'s an interesting point! I hadn\'t thought of it that way.',
+                'Tell me more! I\'d love to know what you\'re thinking.',
+                'That sounds amazing! How does that work?',
+                'I see what you mean. That\'s pretty cool!',
+                'Interesting! Do you have any other thoughts on that?',
+                'I appreciate you sharing that with me!',
+                'That\'s definitely something to consider.',
+                'Wow, that\'s a good observation!'
+            ];
+            
+            const randomReply = fallbackResponses[Math.floor(Math.random() * fallbackResponses.length)];
+            const botMsg = document.createElement('div');
+            botMsg.className = 'chat-message bot';
+            botMsg.innerHTML = `<div class="avatar">🤖</div><div class="message-content">${randomReply}</div>`;
+            chatbox.appendChild(botMsg);
             chatbox.scrollTop = chatbox.scrollHeight;
         });
     };

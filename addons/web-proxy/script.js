@@ -58,6 +58,31 @@ function setupEventListeners() {
             if (searchInput) searchInput.focus();
         }
     });
+
+    // Search submission
+    const searchInput = document.querySelector('.search-baraa input');
+    if (searchInput) {
+        searchInput.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                let searchQuery = this.value.trim();
+                if (searchQuery) {
+                    let url = 'https://www.google.com/search?q=' + encodeURIComponent(searchQuery);
+                    navigateToUrl(url);
+                }
+            }
+        });
+
+        const searchIcon = document.querySelector('.search-iconaa');
+        if (searchIcon) {
+            searchIcon.addEventListener('click', function() {
+                let searchQuery = searchInput.value.trim();
+                if (searchQuery) {
+                    let url = 'https://www.google.com/search?q=' + encodeURIComponent(searchQuery);
+                    navigateToUrl(url);
+                }
+            });
+        }
+    }
 }
 
 function createNewTab() {
