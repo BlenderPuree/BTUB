@@ -327,13 +327,7 @@ main {
 }
 
 /* Proxy integration styles */
-.uptop-baraa, .browser-baraa {
-    z-index: 999;
-}
-
-.tab-contentaa {
-    min-height: 400px;
-}
+/* (proxy styles removed) */
 
 /* Chat integration styles */
 #chat-container {

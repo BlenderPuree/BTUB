@@ -3,7 +3,6 @@ document.addEventListener('DOMContentLoaded', function() {
     const navHome = document.getElementById('nav-home');
     const navGames = document.getElementById('nav-games');
     const navMovies = document.getElementById('nav-movies');
-    const navProxy = document.getElementById('nav-proxy');
     const navChat = document.getElementById('nav-chat');
 
     function clearActive() {
@@ -57,13 +56,6 @@ document.addEventListener('DOMContentLoaded', function() {
         clearActive();
         navMovies.classList.add('active');
         fadeOut(loadMovies);
-    });
-
-    navProxy.addEventListener('click', function(e) {
-        e.preventDefault();
-        clearActive();
-        navProxy.classList.add('active');
-        fadeOut(loadProxy);
     });
 
     navChat.addEventListener('click', function(e) {
@@ -273,51 +265,14 @@ document.addEventListener('DOMContentLoaded', function() {
     };
 
     function loadProxy() {
-        fetch('addons/web-proxy/index.html')
-            .then(response => response.text())
-            .then(html => {
-                content.innerHTML = html;
-                fadeIn();
-                // Load proxy styles and scripts
-                const tempDiv = document.createElement('div');
-                tempDiv.innerHTML = html;
-                const scripts = tempDiv.querySelectorAll('script');
-                const styles = tempDiv.querySelectorAll('link[rel="stylesheet"]');
-                
-                styles.forEach(style => {
-                    const newStyle = document.createElement('link');
-                    newStyle.rel = 'stylesheet';
-                    newStyle.href = 'addons/web-proxy/' + style.getAttribute('href').split('/').pop();
-                    document.head.appendChild(newStyle);
-                });
-                
-                scripts.forEach(script => {
-                    const newScript = document.createElement('script');
-                    if (script.src) {
-                        newScript.src = 'addons/web-proxy/' + script.src.split('/').pop();
-                    } else {
-                        newScript.textContent = script.textContent;
-                    }
-                    document.body.appendChild(newScript);
-                });
-            })
-            .catch(err => {
-                content.innerHTML = '<p>Error loading Web Proxy.</p>';
-                fadeIn();
-            });
-    }
+        }
 
     function loadChat() {
         const chatHTML = `
             <style>
-                #chat-container {
-                    width: 100%;
-                    height: 100%;
-                    display: flex;
-                    flex-direction: column;
-                }
-                .chat-header { background: #383c3f; padding: 20px; border-bottom: 2px solid #4dffa6; }
-                .chat-header h1 { margin: 0; color: #fff; font-size: 24px; }
+                #chat-container { width: 100%; height: 100%; display: flex; flex-direction: column; }
+                .chat-header { background: #383c3f; padding: 12px 20px; border-bottom: 2px solid #4dffa6; display:flex; align-items:center; justify-content:space-between; gap:10px }
+                .chat-header h1 { margin: 0; color: #fff; font-size: 20px; }
                 .chatbox { flex: 1; overflow-y: auto; padding: 20px; display: flex; flex-direction: column; gap: 15px; background: #303336; }
                 .chat-message { display: flex; gap: 10px; animation: fadeIn 0.3s ease-in; }
                 .chat-message.user { justify-content: flex-end; }
@@ -332,17 +287,26 @@ document.addEventListener('DOMContentLoaded', function() {
                 .loading span:nth-child(3) { animation-delay: 0.4s; }
                 @keyframes bounce { 0%, 100% { opacity: 0.3; } 50% { opacity: 1; } }
                 @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-                .chat-input-area { background: #383c3f; padding: 15px; border-top: 2px solid #4dffa6; display: flex; gap: 10px; }
+                .chat-input-area { background: #383c3f; padding: 12px 15px; border-top: 2px solid #4dffa6; display: flex; gap: 10px; }
                 .input-wrapper { flex: 1; display: flex; align-items: flex-end; gap: 10px; }
                 .chat-input-area textarea { flex: 1; background: #52565b; border: 2px solid #666; color: #e8eaed; border-radius: 8px; padding: 10px 12px; font-family: Arial; font-size: 14px; resize: none; max-height: 100px; }
                 .chat-input-area textarea:focus { outline: none; border-color: #4dffa6; }
                 .send-btn { background: #4dffa6; border: none; color: #1e1e1e; width: 40px; height: 40px; border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 20px; flex-shrink: 0; }
                 .send-btn:hover { background: #5ce891; }
+                .hf-key { background: #2b2d2f; border: 1px solid #4dffa6; color: #fff; padding:6px 8px; border-radius:6px; margin-left:8px; width:320px }
+                .hf-actions button { margin-left:6px; padding:6px 8px; border-radius:6px; border:none; cursor:pointer }
+                .hf-actions .save { background:#4dffa6 }
+                .hf-actions .clear { background:#ff6161 }
                 #content { background: #202124 !important; }
             </style>
             <div id="chat-container">
                 <div class="chat-header">
                     <h1>🤖 T_U_B AI Chat</h1>
+                    <div class="hf-actions">
+                        <input id="hfKeyInput" class="hf-key" placeholder="Hugging Face API key (optional, paste and Save)" />
+                        <button class="save" id="saveHfKey">Save</button>
+                        <button class="clear" id="clearHfKey">Clear</button>
+                    </div>
                 </div>
                 <div class="chatbox" id="chatbox">
                     <div class="chat-message bot">
@@ -360,13 +324,29 @@ document.addEventListener('DOMContentLoaded', function() {
         `;
         content.innerHTML = chatHTML;
         fadeIn();
-        
+
+        const hfInput = document.getElementById('hfKeyInput');
+        const saved = localStorage.getItem('hf_api_key');
+        if (saved) hfInput.value = saved;
+        document.getElementById('saveHfKey').addEventListener('click', function() {
+            const val = hfInput.value.trim();
+            if (val) {
+                localStorage.setItem('hf_api_key', val);
+                alert('Hugging Face API key saved locally.');
+            }
+        });
+        document.getElementById('clearHfKey').addEventListener('click', function() {
+            localStorage.removeItem('hf_api_key');
+            hfInput.value = '';
+            alert('Saved Hugging Face API key cleared.');
+        });
+
         const messageInput = document.getElementById('messageInput');
         messageInput.addEventListener('input', function() {
             this.style.height = 'auto';
             this.style.height = Math.min(this.scrollHeight, 100) + 'px';
         });
-        
+
         messageInput.addEventListener('keydown', function(e) {
             if (e.key === 'Enter' && !e.shiftKey) {
                 e.preventDefault();
@@ -375,7 +355,7 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-    window.sendChatMessage = function() {
+    window.sendChatMessage = async function() {
         const messageInput = document.getElementById('messageInput');
         const chatbox = document.getElementById('chatbox');
         const text = messageInput.value.trim();
@@ -386,7 +366,7 @@ document.addEventListener('DOMContentLoaded', function() {
         userMsg.className = 'chat-message user';
         userMsg.innerHTML = `<div class="message-content">${text}</div>`;
         chatbox.appendChild(userMsg);
-        
+
         messageInput.value = '';
         messageInput.style.height = 'auto';
         chatbox.scrollTop = chatbox.scrollHeight;
@@ -398,81 +378,78 @@ document.addEventListener('DOMContentLoaded', function() {
         chatbox.appendChild(loadingMsg);
         chatbox.scrollTop = chatbox.scrollHeight;
 
-        // Use free REST API that doesn't require authentication
-        fetch('https://api.api-ninjas.com/v1/riddles', {
-            method: 'GET',
-            headers: {
-                'X-Api-Key': 'free'
-            }
-        })
-        .then(r => {
-            if (!r.ok) throw new Error('API Error');
-            return r.json();
-        })
-        .then(data => {
-            loadingMsg.remove();
-            
-            // Create an intelligent response based on user input
-            const responses = {
-                'hello': 'Hi there! How can I help you today?',
-                'how are you': 'I\'m doing great, thanks for asking! How can I assist you?',
-                'what is your name': 'I\'m T_U_B AI, your friendly assistant on The Unblocked Blender!',
-                'help': 'I can help you with information and answer questions. Just ask me anything!',
-                'thank you': 'You\'re welcome! Happy to help!',
-                'bye': 'See you later! Feel free to come back anytime!',
-                'hi': 'Hello! What would you like to chat about?'
-            };
-            
-            // Check if user message matches any known responses
-            const lowerText = text.toLowerCase();
-            let reply = responses[lowerText];
-            
-            if (!reply) {
-                // Generate contextual response based on keywords
-                if (lowerText.includes('game')) {
-                    reply = 'We have tons of awesome retro games in our collection! Would you like to check them out?';
-                } else if (lowerText.includes('movie') || lowerText.includes('tv')) {
-                    reply = 'We have a great selection of movies and TV shows available! Want to search for something?';
-                } else if (lowerText.includes('proxy')) {
-                    reply = 'Our web proxy lets you browse the web anonymously and safely. Try it out!';
-                } else if (lowerText.includes('you') || lowerText.includes('tell me')) {
-                    reply = 'I\'m an AI assistant here to help you navigate The Unblocked Blender. What would you like to know?';
-                } else if (lowerText.includes('?')) {
-                    reply = 'That\'s an interesting question! Based on what I know, I\'d say that\'s definitely worth exploring more!';
-                } else {
-                    reply = 'That sounds cool! Tell me more about what you\'re interested in.';
+        // Try Hugging Face Inference if user provided an API key (free tier available)
+        const hfKey = localStorage.getItem('hf_api_key');
+        if (hfKey) {
+            try {
+                const resp = await fetch('https://api-inference.huggingface.co/models/gpt2', {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': 'Bearer ' + hfKey,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ inputs: text, options: { wait_for_model: true }, parameters: { max_new_tokens: 150 } })
+                });
+
+                if (!resp.ok) {
+                    const errBody = await resp.text();
+                    throw new Error('HF API error: ' + errBody);
                 }
+
+                const data = await resp.json();
+                loadingMsg.remove();
+
+                // HF inference may return array or object depending on model
+                let reply = null;
+                if (Array.isArray(data) && data[0] && data[0].generated_text) reply = data[0].generated_text;
+                else if (data.generated_text) reply = data.generated_text;
+
+                if (reply) {
+                    // Trim original prompt if model echoes it
+                    if (reply.toLowerCase().startsWith(text.toLowerCase())) {
+                        reply = reply.substring(text.length).trim();
+                    }
+                    const botMsg = document.createElement('div');
+                    botMsg.className = 'chat-message bot';
+                    botMsg.innerHTML = `<div class="avatar">🤖</div><div class="message-content">${reply}</div>`;
+                    chatbox.appendChild(botMsg);
+                } else {
+                    throw new Error('Unexpected response from HF Inference.');
+                }
+                chatbox.scrollTop = chatbox.scrollHeight;
+                return;
+            } catch (err) {
+                console.error('Hugging Face error:', err);
+                // fall through to fallback
             }
-            
-            const botMsg = document.createElement('div');
-            botMsg.className = 'chat-message bot';
-            botMsg.innerHTML = `<div class="avatar">🤖</div><div class="message-content">${reply}</div>`;
-            chatbox.appendChild(botMsg);
-            chatbox.scrollTop = chatbox.scrollHeight;
-        })
-        .catch(err => {
-            loadingMsg.remove();
-            console.error('Chat Error:', err);
-            
-            // Fallback to local smart responses when API fails
-            const fallbackResponses = [
-                'That\'s an interesting point! I hadn\'t thought of it that way.',
-                'Tell me more! I\'d love to know what you\'re thinking.',
-                'That sounds amazing! How does that work?',
-                'I see what you mean. That\'s pretty cool!',
-                'Interesting! Do you have any other thoughts on that?',
-                'I appreciate you sharing that with me!',
-                'That\'s definitely something to consider.',
-                'Wow, that\'s a good observation!'
-            ];
-            
-            const randomReply = fallbackResponses[Math.floor(Math.random() * fallbackResponses.length)];
-            const botMsg = document.createElement('div');
-            botMsg.className = 'chat-message bot';
-            botMsg.innerHTML = `<div class="avatar">🤖</div><div class="message-content">${randomReply}</div>`;
-            chatbox.appendChild(botMsg);
-            chatbox.scrollTop = chatbox.scrollHeight;
-        });
+        }
+
+        // Fallback local responses (deterministic + keyword-based)
+        loadingMsg.remove();
+        const lowerText = text.toLowerCase();
+        const canned = {
+            'hello': "Hi there! How can I help you today?",
+            'hi': "Hello! What would you like to chat about?",
+            'how are you': "I'm doing great — ready to help!",
+            'what is your name': "I'm T_U_B AI, your friendly assistant.",
+            'help': "I can answer questions about the site, games, and movies. Ask away!",
+            'thanks': "You're welcome!"
+        };
+
+        let reply = canned[lowerText];
+        if (!reply) {
+            if (lowerText.includes('game')) reply = 'We have lots of retro games — try the Games page.';
+            else if (lowerText.includes('movie') || lowerText.includes('tv')) reply = 'Try the Movies/TV search to find titles.';
+            else if (lowerText.includes('proxy')) reply = 'The proxy was removed, but I can help with site navigation.';
+            else if (lowerText.includes('?')) reply = "That's an interesting question — can you give more details?";
+            else reply = "Tell me more — I'm listening.";
+        }
+
+        const botMsg = document.createElement('div');
+        botMsg.className = 'chat-message bot';
+        botMsg.innerHTML = `<div class="avatar">🤖</div><div class="message-content">${reply}</div>`;
+        chatbox.appendChild(botMsg);
+        chatbox.scrollTop = chatbox.scrollHeight;
     };
 
     navHome.classList.add('active');
