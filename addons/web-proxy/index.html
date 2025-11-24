@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link rel="icon" href="/favicon.ico" type="image/x-icon" />
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="T_U_B Web Proxy - Anonymous, fast, and private web browsing.">
+    <title>T_U_B Web Proxy</title>
+    <link rel="stylesheet" type="text/css" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@48,400,0,0" />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@48,400,1,0" />
+</head>
+<body>
+    <div class="uptop-baraa">
+        <div class="tabaa activeaa">
+            <span class="tab-nameaa">New Tab</span>
+            <i class="fas fa-times close-btnaa"></i>
+        </div>
+        <div class="add-tabaa" title="Add tab" id="add-tabaa">
+            <i class="fa-solid fa-circle-plus"></i>
+        </div>
+    </div>
+    <div class="browser-baraa">
+        <button class="backward-buttonaa" title="Click to go back">
+            <i class="fas fa-arrow-left"></i>
+        </button>
+        <button class="forward-buttonaa" title="Click to go forward">
+            <i class="fas fa-arrow-right"></i>
+        </button>
+        <button class="reload-buttonaa" title="Reload this page">
+            <i class="fas fa-redo"></i>
+        </button>
+        <button class="home-buttonaa" title="Go to T_U_B home">
+            <i class="fas fa-home"></i>
+        </button>
+        <div class="address-baraa">
+            <i class="fas fa-lock lock-iconaa"></i>
+            <input type="text" placeholder="Enter a URL" value="tubproxy://start" id="url-baraa">
+            <div class="official-caa">
+                <i class="fa-solid fa-circle-check officialaa">&nbsp;&nbsp;𝙾𝚏𝚏𝚒𝚌𝚒𝚊𝚕</i>
+            </div>
+        </div>
+        <button class="fullscreen-button" title="Enter fullscreen" onclick="toggleFullscreen()">
+            <i class="fas fa-expand"></i>
+        </button>
+        <button class="settings-buttonaa" title="Settings">
+            <i class="fas fa-cog"></i>
+        </button>
+        <button class="menu-buttonaa" title="More options" onclick="toggleDropdownccc()">⋮</button>
+        <div id="myDropdownccc" class="dropdown-menuccc">
+            <a href="javascript:void(0);">New Tab</a>
+            <a href="javascript:void(0);" onclick="changeTabContent('tubproxy://settings')">Settings</a>
+            <a href="javascript:void(0);" onclick="changeTabContent('tubproxy://urls')">Internal URLs</a>
+        </div>
+    </div>
+    <body>
+        <div class="contentaa tab-contentaa activeaa">
+            <div class="Xt7Lm9Kp3R8f">
+                <p>𝙼𝚊𝚍𝚎 𝚋𝚢 𝚃_𝚄_𝙱</p>
+            </div>
+            <h23>T_U_B Web Proxy</h23>
+            <h21>𝚟𝟷.𝟶</h21>
+            <div class="search-baraa">
+                <div class="search-containeraa">
+                    <div class="search-engine-dropdownaa" onclick="toggleDropdown()">
+                        <img src="https://t3.gstatic.com/faviconV2?client=SOCIAL&type=FAVICON&fallback_opts=TYPE,SIZE,URL&url=http://google.com&size=256" alt="Google" id="selected-engineaa">
+                    </div>
+                    <div class="dropdown-contentaa" id="engineDropdownaa">
+                        <div class="status-messageaa" id="statusMessageaa">Searching with Google</div>
+                        <a href="javascript:void(0);" onclick="selectEngine('https://t3.gstatic.com/faviconV2?client=SOCIAL&type=FAVICON&fallback_opts=TYPE,SIZE,URL&url=http://google.com&size=256', 'Google')" data-engine="Google">
+                            <img src="https://t3.gstatic.com/faviconV2?client=SOCIAL&type=FAVICON&fallback_opts=TYPE,SIZE,URL&url=http://google.com&size=256" alt="Google"> &nbsp;Search with Google </a>
+                        <a href="javascript:void(0);" onclick="selectEngine('https://www.bing.com/favicon.ico', 'Bing')" data-engine="Bing">
+                            <img src="https://www.bing.com/favicon.ico" alt="Bing"> &nbsp;Search with Bing </a>
+                        <a href="javascript:void(0);" onclick="selectEngine('https://duckduckgo.com/favicon.ico', 'DuckDuckGo')" data-engine="DuckDuckGo">
+                            <img src="https://duckduckgo.com/favicon.ico" alt="DuckDuckGo"> Search with DuckDuckGo </a>
+                    </div>
+                </div>
+                <input type="text" placeholder="Search the web or enter a URL [Ctrl + K]">
+                <i class="fas fa-search search-iconaa"></i>
+            </div>
+        </div>
+        <script src="script.js"></script>
+    </body>
+</html>
