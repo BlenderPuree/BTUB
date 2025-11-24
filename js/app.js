@@ -3,6 +3,8 @@ document.addEventListener('DOMContentLoaded', function() {
     const navHome = document.getElementById('nav-home');
     const navGames = document.getElementById('nav-games');
     const navMovies = document.getElementById('nav-movies');
+    const navProxy = document.getElementById('nav-proxy');
+    const navChat = document.getElementById('nav-chat');
 
     function clearActive() {
         document.querySelectorAll('.nav-link').forEach(a => {
@@ -55,6 +57,20 @@ document.addEventListener('DOMContentLoaded', function() {
         clearActive();
         navMovies.classList.add('active');
         fadeOut(loadMovies);
+    });
+
+    navProxy.addEventListener('click', function(e) {
+        e.preventDefault();
+        clearActive();
+        navProxy.classList.add('active');
+        fadeOut(loadProxy);
+    });
+
+    navChat.addEventListener('click', function(e) {
+        e.preventDefault();
+        clearActive();
+        navChat.classList.add('active');
+        fadeOut(loadChat);
     });
 
     function loadHome() {
@@ -254,6 +270,173 @@ document.addEventListener('DOMContentLoaded', function() {
         } else if (movieFrame.msRequestFullscreen) {
             movieFrame.msRequestFullscreen();
         }
+    };
+
+    function loadProxy() {
+        fetch('addons/web-proxy/index.html')
+            .then(response => response.text())
+            .then(html => {
+                content.innerHTML = html;
+                fadeIn();
+                // Load proxy styles and scripts
+                const tempDiv = document.createElement('div');
+                tempDiv.innerHTML = html;
+                const scripts = tempDiv.querySelectorAll('script');
+                const styles = tempDiv.querySelectorAll('link[rel="stylesheet"]');
+                
+                styles.forEach(style => {
+                    const newStyle = document.createElement('link');
+                    newStyle.rel = 'stylesheet';
+                    newStyle.href = 'addons/web-proxy/' + style.getAttribute('href').split('/').pop();
+                    document.head.appendChild(newStyle);
+                });
+                
+                scripts.forEach(script => {
+                    const newScript = document.createElement('script');
+                    if (script.src) {
+                        newScript.src = 'addons/web-proxy/' + script.src.split('/').pop();
+                    } else {
+                        newScript.textContent = script.textContent;
+                    }
+                    document.body.appendChild(newScript);
+                });
+            })
+            .catch(err => {
+                content.innerHTML = '<p>Error loading Web Proxy.</p>';
+                fadeIn();
+            });
+    }
+
+    function loadChat() {
+        const chatHTML = `
+            <style>
+                #chat-container {
+                    width: 100%;
+                    height: 100%;
+                    display: flex;
+                    flex-direction: column;
+                }
+                .chat-header { background: #383c3f; padding: 20px; border-bottom: 2px solid #4dffa6; }
+                .chat-header h1 { margin: 0; color: #fff; font-size: 24px; }
+                .chatbox { flex: 1; overflow-y: auto; padding: 20px; display: flex; flex-direction: column; gap: 15px; background: #303336; }
+                .chat-message { display: flex; gap: 10px; animation: fadeIn 0.3s ease-in; }
+                .chat-message.user { justify-content: flex-end; }
+                .chat-message.bot { justify-content: flex-start; }
+                .message-content { max-width: 70%; padding: 12px 16px; border-radius: 12px; word-wrap: break-word; }
+                .chat-message.user .message-content { background: #ff6161; color: #fff; }
+                .chat-message.bot .message-content { background: #4a4e51; color: #fff; border: 2px solid #4dffa6; }
+                .chat-message.bot .avatar { width: 32px; height: 32px; background: #ff6161; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: #fff; flex-shrink: 0; }
+                .loading { display: flex; gap: 5px; padding: 12px 16px; }
+                .loading span { width: 8px; height: 8px; background: #4dffa6; border-radius: 50%; animation: bounce 1.4s infinite; }
+                .loading span:nth-child(2) { animation-delay: 0.2s; }
+                .loading span:nth-child(3) { animation-delay: 0.4s; }
+                @keyframes bounce { 0%, 100% { opacity: 0.3; } 50% { opacity: 1; } }
+                @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+                .chat-input-area { background: #383c3f; padding: 15px; border-top: 2px solid #4dffa6; display: flex; gap: 10px; }
+                .input-wrapper { flex: 1; display: flex; align-items: flex-end; gap: 10px; }
+                .chat-input-area textarea { flex: 1; background: #52565b; border: 2px solid #666; color: #e8eaed; border-radius: 8px; padding: 10px 12px; font-family: Arial; font-size: 14px; resize: none; max-height: 100px; }
+                .chat-input-area textarea:focus { outline: none; border-color: #4dffa6; }
+                .send-btn { background: #4dffa6; border: none; color: #1e1e1e; width: 40px; height: 40px; border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 20px; flex-shrink: 0; }
+                .send-btn:hover { background: #5ce891; }
+                #content { background: #202124 !important; }
+            </style>
+            <div id="chat-container">
+                <div class="chat-header">
+                    <h1>🤖 T_U_B AI Chat</h1>
+                </div>
+                <div class="chatbox" id="chatbox">
+                    <div class="chat-message bot">
+                        <div class="avatar">🤖</div>
+                        <div class="message-content">Hi! I'm T_U_B AI. How can I help you today?</div>
+                    </div>
+                </div>
+                <div class="chat-input-area">
+                    <div class="input-wrapper">
+                        <textarea id="messageInput" placeholder="Type your message..." rows="1"></textarea>
+                        <button class="send-btn" onclick="window.sendChatMessage()">📤</button>
+                    </div>
+                </div>
+            </div>
+        `;
+        content.innerHTML = chatHTML;
+        fadeIn();
+        
+        const messageInput = document.getElementById('messageInput');
+        messageInput.addEventListener('input', function() {
+            this.style.height = 'auto';
+            this.style.height = Math.min(this.scrollHeight, 100) + 'px';
+        });
+        
+        messageInput.addEventListener('keydown', function(e) {
+            if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                window.sendChatMessage();
+            }
+        });
+    }
+
+    window.sendChatMessage = function() {
+        const messageInput = document.getElementById('messageInput');
+        const chatbox = document.getElementById('chatbox');
+        const text = messageInput.value.trim();
+        if (!text) return;
+
+        // Add user message
+        const userMsg = document.createElement('div');
+        userMsg.className = 'chat-message user';
+        userMsg.innerHTML = `<div class="message-content">${text}</div>`;
+        chatbox.appendChild(userMsg);
+        
+        messageInput.value = '';
+        messageInput.style.height = 'auto';
+        chatbox.scrollTop = chatbox.scrollHeight;
+
+        // Add loading message
+        const loadingMsg = document.createElement('div');
+        loadingMsg.className = 'chat-message bot';
+        loadingMsg.innerHTML = `<div class="avatar">🤖</div><div class="loading"><span></span><span></span><span></span></div>`;
+        chatbox.appendChild(loadingMsg);
+        chatbox.scrollTop = chatbox.scrollHeight;
+
+        // Use a simple working API
+        fetch('https://api.cohere.ai/v1/generate', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': 'Bearer TRIAL-IG3FYWDPNXKZQDQ5ZNP4SQPRSOPA'
+            },
+            body: JSON.stringify({
+                model: 'command',
+                prompt: text,
+                max_tokens: 200,
+                temperature: 0.8
+            })
+        })
+        .then(r => r.json())
+        .then(data => {
+            loadingMsg.remove();
+            if (data.generations && data.generations[0]) {
+                const reply = data.generations[0].text.trim();
+                const botMsg = document.createElement('div');
+                botMsg.className = 'chat-message bot';
+                botMsg.innerHTML = `<div class="avatar">🤖</div><div class="message-content">${reply}</div>`;
+                chatbox.appendChild(botMsg);
+            } else {
+                const errorMsg = document.createElement('div');
+                errorMsg.className = 'chat-message bot';
+                errorMsg.innerHTML = `<div class="avatar">🤖</div><div class="message-content">Sorry, I couldn't process that. Try again.</div>`;
+                chatbox.appendChild(errorMsg);
+            }
+            chatbox.scrollTop = chatbox.scrollHeight;
+        })
+        .catch(err => {
+            loadingMsg.remove();
+            const errorMsg = document.createElement('div');
+            errorMsg.className = 'chat-message bot';
+            errorMsg.innerHTML = `<div class="avatar">🤖</div><div class="message-content">Error connecting to AI. Please try again.</div>`;
+            chatbox.appendChild(errorMsg);
+            chatbox.scrollTop = chatbox.scrollHeight;
+        });
     };
 
     navHome.classList.add('active');
